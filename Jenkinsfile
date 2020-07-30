@@ -37,7 +37,7 @@ pipeline {
             }
         }
        
-        stage ('Build') {
+        stage ('Docker Build') {
             steps{
                     app = docker.build("ymhemant/simplego")
                 
