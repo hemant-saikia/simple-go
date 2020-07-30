@@ -20,7 +20,7 @@ pipeline {
         
         stage('Build') {
             steps {
-                echo ${GOPATH}
+                echo "${GOPATH}"
                 echo 'Compiling and building'
                 sh 'env GOOS=linux go build'
             }
