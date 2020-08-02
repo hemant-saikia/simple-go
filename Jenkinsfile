@@ -51,13 +51,11 @@ pipeline {
          * First, the incremental build number from Jenkins
          * Second, the 'latest' tag.
          * Pushing multiple tags is cheap, as all the layers are reused. */
-         steps{
-            docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
+        steps{
+            sshagent(credentials : ['00437793-dff8-41aa-a227-66e788ab9990']) {
+                sh 'scp simple-go ubuntu@ec2-3-6-77-14.ap-south-1.compute.amazonaws.com:/home/ubuntu/asterisk/simple-go'
+            }
         }
-         }
-    }
         stage('Post test'){
             steps{
                 echo 'Done with builds and tests'
