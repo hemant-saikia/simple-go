@@ -1,74 +1,36 @@
 pipeline {
-    agent any
-    tools {
-        go 'Go1.14'
-    }
     environment {
-        GO114MODULE = 'on'
-        CGO_ENABLED = 0 
-        GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
-        BINARYPATH = "${JENKINS_HOME}/workspace/${JOB_NAME}"
+        registry = "ymhemant/simple-go"
+        registryCredential = 'ymhemant'
+        dockerImage = ''
     }
-    stages {        
-        stage('Pre Test') {
+    agent any
+    stages {
+        stage('Cloning our Git') {
             steps {
-                echo 'Installing dependencies'
-                sh 'go version'
-                sh 'go get -d ./'
+                git 'https://github.com/saikiahemant/simple-go'
             }
         }
-        
-        stage('Build') {
-            steps {
-                echo "${GOPATH}"
-                echo 'Compiling and building'
-                sh 'env GOOS=linux go build'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                withEnv(["PATH+GO=${GOPATH}/bin"]){
-                    echo 'Running vetting'
-                    sh 'go vet .'
-                    echo 'Running test'
-                    sh 'go test -v'
-                }
-            }
-        }
-       
-        stage ('Docker Build') {
-            steps {
-                echo 'Starting to build docker image'
+        stage('Building our image') {
+            steps{
                 script {
-                    def app = docker.build("ymhemant/simplego")
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
             }
         }
-        
-        stage('Push image') {
-            /* Finally, we'll push the image with two tags:
-            * First, the incremental build number from Jenkins
-            * Second, the 'latest' tag.
-            * Pushing multiple tags is cheap, as all the layers are reused. */
+        stage('Deploy our image') {
             steps{
-                sshagent(credentials : ['00437793-dff8-41aa-a227-66e788ab9990']) {
-                    sh 'scp simple-go ubuntu@ec2-3-6-77-14.ap-south-1.compute.amazonaws.com:/home/ubuntu/asterisk/simple-go'
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                    }
                 }
             }
         }
-        stage('Post test'){
+        stage('Cleaning up') {
             steps{
-                echo 'Done with builds and tests'
-            }	
+                sh "docker rmi $registry:$BUILD_NUMBER"
+            }
         }
     }
-    post{
-    success {
-      slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})  BUILD_LOG_EXCERPT")
-    }
-    failure {
-      slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-    }
-}
 }
