@@ -14,6 +14,7 @@ pipeline {
         stage('Building our image') {
              
             steps{
+                sh 'echo $PATH'
                 sh 'docker build -t simple-go .'
             }
         }
