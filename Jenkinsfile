@@ -17,14 +17,16 @@ pipeline {
              
             steps{
                 sh 'echo $PATH'
-                sh 'docker build -t simple-go .'
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
             }
         }
         stage('Deploy our image') {
             steps{
                 script {
-                    docker.withRegistry( '', registryCredential ) {
-                        dockerImage.push()
+                    docker.withRegistry( '', docker-hub-credentials) {
+                    dockerImage.push()
                     }
                 }
             }
