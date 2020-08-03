@@ -13,23 +13,24 @@ pipeline {
             }
         }
         stage('Building our image') {
-            steps{
+            steps {
                 sh 'echo $PATH'
                 sh 'docker build -t simple-go .'
             }
         }
-        stage('Deploy with docker tool')
-        {
-            steps{
-                docker.withTool('dockerins') {
+        stage('Deploy with docker tool') {
+            steps {
+                script{
+                    docker.withTool('dockerins') {
                     withDockerRegistry([ credentialsId: "docker-hub-credentials", url: "" ]) {
                         sh 'docker push ymhemant/simple-go:latest'
+                        }
                     }
                 }
             }
         }
         stage('Cleaning up') {
-            steps{
+            steps {
                 sh "echo Done"
             }
         }
