@@ -3,7 +3,7 @@ pipeline {
         registry = "ymhemant/simple-go"
         registryCredential = 'ymhemant'
         dockerImage = ''
-        PATH = "/hot/new/bin:$PATH"
+        PATH = "/usr/local/bin:$PATH"
     }
     agent any
     stages {
