@@ -20,10 +20,19 @@ pipeline {
                 sh 'docker build -t simple-go .'
             }
         }
-        
+        stage('Deploy with docker tool')
+        {
+            steps{
+                docker.withTool('dockerins') {
+                    withDockerRegistry([ credentialsId: "docker-hub-credentials", url: "" ]) {
+                sh 'docker push ymhemant/simple-go:latest'
+            }
+                }
+            }
+        }
         stage('Cleaning up') {
             steps{
-                sh "Done"
+                sh "echo Done"
             }
         }
     }
