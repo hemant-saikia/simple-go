@@ -9,7 +9,7 @@ pipeline {
         stage('Cloning our Git') {
             steps {
                 git 'https://github.com/saikiahemant/simple-go'
-                PATH="/usr/local/bin:$PATH"
+                
             }
         }
         stage('Building our image') {
