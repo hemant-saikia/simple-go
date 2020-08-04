@@ -20,12 +20,8 @@ pipeline {
         }
         stage('Deploy with docker tool') {
             steps {
-                script{
-                    docker.withTool('dockerins') {
                     withDockerRegistry([ credentialsId: "docker-hub-credentials", url: "" ]) {
                         sh 'docker push ymhemant/simple-go:latest'
-                        }
-                    }
                 }
             }
         }
