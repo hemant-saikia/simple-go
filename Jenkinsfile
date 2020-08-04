@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Cloning our Git') {
             steps {
-                git branch: 'develop', 
+                git  
                 url: 'https://bitbucket.org/yellowmessenger/asterisk-ari.git',
                 credentialsId: 'bitbucket-login'
             }
