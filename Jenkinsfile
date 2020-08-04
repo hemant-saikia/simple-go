@@ -1,7 +1,7 @@
 pipeline {
     environment {
         registry = "ymhemant/simple-go"
-        registryCredential = 'docker-hub-credential'
+        registryCredential = 'docker-hub-credentials'
         dockerImage = ''
         PATH = "/usr/local/bin:$PATH"
     }
@@ -15,7 +15,6 @@ pipeline {
         stage('Test') {
             steps {
                 sh 'echo $PATH'
-                
             }
         }
        stage('Building image') {
@@ -32,6 +31,7 @@ pipeline {
                     dockerImage.push()
                     }
                 }
+                sh 'echo Who knows?'
             }
         }
         stage('Cleaning up') {
