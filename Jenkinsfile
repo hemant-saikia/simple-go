@@ -1,7 +1,7 @@
 pipeline {
     environment {
         registry = "ymhemant/simple-go"
-        registryCredential = 'ymhemant'
+        registryCredential = 'docker-hub-credential'
         dockerImage = ''
         PATH = "/usr/local/bin:$PATH"
     }
@@ -12,16 +12,25 @@ pipeline {
                 git 'https://github.com/saikiahemant/simple-go'
             }
         }
-        stage('Building our image') {
+        stage('Test') {
             steps {
                 sh 'echo $PATH'
-                sh 'docker build -t simple-go .'
+                
             }
         }
-        stage('Deploy with docker tool') {
-            steps {
-                    withDockerRegistry([ credentialsId: "docker-hub-credentials", url: "" ]) {
-                        sh 'docker push ymhemant/simple-go:latest'
+       stage('Building image') {
+            steps{
+                script {
+                dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+        stage('Deploy Image') {
+            steps{
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                    dockerImage.push()
+                    }
                 }
             }
         }
