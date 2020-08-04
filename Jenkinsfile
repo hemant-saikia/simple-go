@@ -24,14 +24,11 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Image') {
+        stage ('Deploy') {
             steps{
-                script {
-                    docker.withRegistry( '', registryCredential ) {
-                    dockerImage.push()
-                    }
+                    sshagent(credentials : ['00437793-dff8-41aa-a227-66e788ab9990']) {
+                   sh 'scp simple-go ubuntu@ec2-3-6-77-14.ap-south-1.compute.amazonaws.com:/home/ubuntu/asterisk/'
                 }
-                sh 'echo Who knows?'
             }
         }
         stage('Cleaning up') {
