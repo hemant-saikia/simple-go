@@ -16,3 +16,21 @@
         }
          }
     }
+
+
+
+     stage('Building our image') {
+             
+            steps{
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+
+          sh 'docker build -t simple-go .'
+
+          steps{
+                sh 'echo $PATH'
+                sh 'docker build -t simple-go .'
+            }
